@@ -1,0 +1,19 @@
+# Loại bỏ toàn bộ thư mục data (nơi chứa các folder ảnh thực vật)
+data/
+
+# Loại bỏ các thư mục chứa model đã train (thường rất nặng)
+models/
+*.h5
+*.npy
+
+# Loại bỏ các file ảnh tạm hoặc file ảnh đơn lẻ trong thư mục gốc
+*.png
+*.jpg
+*.jpeg
+
+# Loại bỏ các file rác của Python và VS Code
+__pycache__/
+.vscode/
+
+# Loại bỏ các file log hoặc output
+outputs/
