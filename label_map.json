@@ -1,0 +1,31 @@
+{
+  "plant": {
+    "Black-grass": 0,
+    "Charlock": 1,
+    "Cleavers": 2,
+    "Common Chickweed": 3,
+    "Common wheat": 4,
+    "Fat Hen": 5,
+    "Loose Silky-bent": 6,
+    "Maize": 7,
+    "Scentless Mayweed": 8,
+    "Shepherd's Purse": 9,
+    "Small-flowered Cranesbill": 10,
+    "Sugar beet": 11
+  },
+  "class_names": [
+    "Black-grass",
+    "Charlock",
+    "Cleavers",
+    "Common Chickweed",
+    "Common wheat",
+    "Fat Hen",
+    "Loose Silky-bent",
+    "Maize",
+    "Scentless Mayweed",
+    "Shepherd's Purse",
+    "Small-flowered Cranesbill",
+    "Sugar beet"
+  ],
+  "num_classes": 12
+}
