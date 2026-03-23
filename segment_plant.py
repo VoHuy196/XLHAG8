@@ -5,7 +5,6 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 def show_pipeline_steps(images_and_titles):
     """Hiển thị toàn bộ các bước xử lý theo dạng lưới."""
     cols = 3
@@ -38,9 +37,8 @@ def preprocess_image(img_path, target_size=(128, 128), debug_steps=None):
     if debug_steps is not None:
         debug_steps["img_rgb"] = img_rgb
 
-    # 2. QUET NHIEU: dung Bilateral Filter de giu lai canh la sac net
-    # d=9: duong kinh vung loc, 75, 75: do loc mau va khong gian
-    filtered = cv2.bilateralFilter(img_rgb, 9, 75, 75)
+    # 2. KHU NHIU GAUSS: lam muot nhieu tan so cao truoc khi tao mask
+    filtered = cv2.GaussianBlur(img_rgb, (5, 5), 0)
     if debug_steps is not None:
         debug_steps["filtered"] = filtered
 
@@ -102,7 +100,7 @@ def segment_plant(image_path, show_steps=True):
                 steps.append((title, image, is_gray))
 
         add_step("1. Ảnh gốc (RGB)", "img_rgb", False)
-        add_step("2. Sau bilateral filter", "filtered", False)
+        add_step("2. Sau Gaussian blur", "filtered", False)
         add_step("3. HSV (hiển thị RGB)", "hsv_display", False)
         add_step("4. Mask xanh ban đầu", "mask_raw", True)
         add_step("5. Mask sau opening", "mask_open", True)
@@ -130,7 +128,7 @@ def segment_plant(image_path, show_steps=True):
 def main():
 
     parser = argparse.ArgumentParser(description="Segment green plant regions from an image.")
-    default_image = Path(__file__).resolve().parent / "dataset" / "Fat Hen" / "2.png"
+    default_image = Path(__file__).resolve().parent / "dataset" / "Black-grass" / "2.png"
     parser.add_argument("--image", default=str(default_image), help="Path to the input image")
     parser.add_argument("--no-show", action="store_true", help="Do not display matplotlib windows")
     args = parser.parse_args()
