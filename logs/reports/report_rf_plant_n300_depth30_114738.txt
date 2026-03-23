@@ -1,0 +1,61 @@
+EXPERIMENT REPORT - 2026-03-22 11:47:38
+Task  : plant
+Model : RandomForestClassifier (n_estimators=300, max_depth=30, criterion=gini)
+========================================
+CLASSIFICATION REPORT:
+                           precision    recall  f1-score   support
+
+              Black-grass       0.73      0.38      0.50       117
+                 Charlock       0.84      0.94      0.89       154
+                 Cleavers       0.83      0.83      0.83        96
+         Common Chickweed       0.94      0.91      0.92       222
+             Common wheat       0.76      0.88      0.82        68
+                  Fat Hen       0.89      0.82      0.86       165
+         Loose Silky-bent       0.75      0.89      0.81       207
+                    Maize       0.89      0.89      0.89        73
+        Scentless Mayweed       0.77      0.87      0.82       165
+       ShepherdGÇÖs Purse       0.70      0.66      0.68        88
+Small-flowered Cranesbill       0.91      0.95      0.93       169
+               Sugar beet       0.92      0.81      0.86       138
+           nonsegmentedv2       0.00      0.00      0.00         0
+
+                 accuracy                           0.84      1662
+                macro avg       0.76      0.76      0.75      1662
+             weighted avg       0.84      0.84      0.83      1662
+
+CONFUSION MATRIX:
+[[ 45   1   0   0  10   4  57   0   0   0   0   0   0]
+ [  0 145   3   0   0   1   0   1   0   1   2   1   0]
+ [  0   4  80   2   1   1   0   3   2   0   1   2   0]
+ [  0   0   0 201   0   1   0   1   6  10   3   0   0]
+ [  2   0   1   0  60   2   1   0   1   0   0   1   0]
+ [  0  14   3   1   4 136   0   0   1   5   1   0   0]
+ [ 15   0   0   1   2   4 184   0   0   0   1   0   0]
+ [  0   0   0   0   0   0   0  65   3   0   2   3   0]
+ [  0   4   0   3   1   0   2   1 144   7   0   3   0]
+ [  0   1   6   3   0   0   0   1  19  58   0   0   0]
+ [  0   1   2   1   1   0   0   0   1   2 161   0   0]
+ [  0   3   1   1   0   4   1   1   9   0   6 112   0]
+ [  0   0   0   0   0   0   0   0   0   0   0   0   0]]
+
+FEATURE IMPORTANCES (Top 20):
+   1. f7       importance=0.019201
+   2. f1887    importance=0.014129
+   3. f1889    importance=0.012022
+   4. f58      importance=0.011701
+   5. f32      importance=0.011553
+   6. f1882    importance=0.011270
+   7. f1880    importance=0.011195
+   8. f56      importance=0.011080
+   9. f1886    importance=0.011022
+  10. f48      importance=0.011021
+  11. f49      importance=0.010913
+  12. f59      importance=0.010822
+  13. f1881    importance=0.010741
+  14. f50      importance=0.010566
+  15. f8       importance=0.010395
+  16. f0       importance=0.010372
+  17. f51      importance=0.010146
+  18. f57      importance=0.009877
+  19. f6       importance=0.009820
+  20. f60      importance=0.009813

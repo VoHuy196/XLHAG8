@@ -125,8 +125,8 @@ def build_dataset(dataset_path):
     plant_to_idx = {name: idx for idx, name in enumerate(all_plants)}
 
     print(f"Plant classes ({len(all_plants)}): {all_plants}")
-    if len(all_plants) != 12:
-        print(f"[WARN] Expected 12 classes in dataset, found {len(all_plants)}")
+    if len(all_plants) != 13:
+        print(f"[WARN] Expected 13 classes in dataset, found {len(all_plants)}")
 
     for folder_name in sorted(os.listdir(dataset_path)):
         folder_path = os.path.join(dataset_path, folder_name)
@@ -178,5 +178,5 @@ def build_dataset(dataset_path):
 
 
 if __name__ == "__main__":
-    dataset_path = os.path.join(os.path.dirname(__file__), "dataset")
+    dataset_path = os.path.join(os.path.dirname(__file__), "data")
     build_dataset(dataset_path)

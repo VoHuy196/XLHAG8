@@ -9,9 +9,10 @@
     "Loose Silky-bent": 6,
     "Maize": 7,
     "Scentless Mayweed": 8,
-    "Shepherd's Purse": 9,
+    "ShepherdGÇÖs Purse": 9,
     "Small-flowered Cranesbill": 10,
-    "Sugar beet": 11
+    "Sugar beet": 11,
+    "nonsegmentedv2": 12
   },
   "class_names": [
     "Black-grass",
@@ -23,9 +24,10 @@
     "Loose Silky-bent",
     "Maize",
     "Scentless Mayweed",
-    "Shepherd's Purse",
+    "ShepherdGÇÖs Purse",
     "Small-flowered Cranesbill",
-    "Sugar beet"
+    "Sugar beet",
+    "nonsegmentedv2"
   ],
-  "num_classes": 12
+  "num_classes": 13
 }
