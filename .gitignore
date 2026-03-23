@@ -1,8 +1,6 @@
 # Loại bỏ toàn bộ thư mục data (nơi chứa các folder ảnh thực vật)
-data/
 
 # Loại bỏ các thư mục chứa model đã train (thường rất nặng)
-models/
 *.h5
 *.npy
 
