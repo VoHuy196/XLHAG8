@@ -44,3 +44,8 @@ jobs:
       - name: Build Docker Images
         run: |
           docker compose build
+
+      - name: Deploy Services
+        run: |
+          docker compose down
+          docker compose up -d
