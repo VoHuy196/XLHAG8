@@ -104,8 +104,42 @@ with DAG(
     catchup=False,
     tags=['ml', 'mlflow', 'xlhag8'],
 ) as dag:
+    from airflow.operators.bash import BashOperator
+
+    download_data_task = BashOperator(
+        task_id='download_kaggle_dataset',
+        bash_command="""
+            mkdir -p /opt/airflow/src/dataset
+            if [ ! -d "/opt/airflow/src/dataset/Tomato" ] && [ ! -d "/opt/airflow/src/dataset/Tomato___Bacterial_spot" ] && [ -z "$(ls -A /opt/airflow/src/dataset)" ]; then
+                echo "Downloading dataset..."
+                kaggle datasets download -d emmarex/plantdisease -p /opt/airflow/src/dataset --unzip
+                
+                # In case kaggle extracts into a subfolder like 'plantvillage' or 'PlantVillage', move them up
+                if [ -d "/opt/airflow/src/dataset/plantvillage" ]; then
+                    mv /opt/airflow/src/dataset/plantvillage/* /opt/airflow/src/dataset/
+                elif [ -d "/opt/airflow/src/dataset/PlantVillage" ]; then
+                    mv /opt/airflow/src/dataset/PlantVillage/* /opt/airflow/src/dataset/
+                fi
+            else
+                echo "Dataset already exists, skipping download."
+            fi
+        """,
+    )
+
+    extract_features_task = BashOperator(
+        task_id='extract_features',
+        bash_command='python /opt/airflow/src/feature_extraction.py',
+    )
+
+    preprocessing_task = BashOperator(
+        task_id='preprocessing',
+        bash_command='python /opt/airflow/src/preprocessing.py',
+    )
+
     task_experiment = PythonOperator(
         task_id='run_rf_training',
         python_callable=run_rf_training,
         provide_context=True,
     )
+
+    download_data_task >> extract_features_task >> preprocessing_task >> task_experiment

@@ -157,7 +157,7 @@ def build_dataset(dataset_path):
     print("y_plant  shape      :", y_plant.shape)
 
     base_dir = os.path.dirname(__file__)
-    data_dir = os.path.join(base_dir, "data")
+    data_dir = os.path.join(os.path.dirname(base_dir), "data")
     os.makedirs(data_dir, exist_ok=True)
 
     np.save(os.path.join(data_dir, "X.npy"),         X)
@@ -168,13 +168,13 @@ def build_dataset(dataset_path):
         "class_names": all_plants,
         "num_classes": len(all_plants)
     }
-    with open(os.path.join(base_dir, "label_map.json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(data_dir, "label_map.json"), "w", encoding="utf-8") as f:
         json.dump(label_map, f, indent=2, ensure_ascii=False)
 
     print("\nSaved:")
     print("  data/X.npy")
     print("  data/y_plant.npy  (class index for 12 plant classes)")
-    print("  label_map.json")
+    print("  data/label_map.json")
 
 
 if __name__ == "__main__":

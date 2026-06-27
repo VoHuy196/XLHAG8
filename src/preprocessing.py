@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 import joblib
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 RAW_DATA_DIR = BASE_DIR / "data"
 OUTPUT_DIR = RAW_DATA_DIR
 

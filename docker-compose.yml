@@ -14,6 +14,9 @@ x-airflow-common:
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     
+    KAGGLE_USERNAME: ${KAGGLE_USERNAME:-}
+    KAGGLE_KEY: ${KAGGLE_KEY:-}
+    
     MLFLOW_TRACKING_URI: 'http://mlflow:5001'
     MLFLOW_S3_ENDPOINT_URL: 'http://minio:9000'
     AWS_ACCESS_KEY_ID: 'minioadmin'
@@ -26,6 +29,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
     - ${AIRFLOW_PROJ_DIR:-.}/data:/opt/airflow/data
     - ${AIRFLOW_PROJ_DIR:-.}/models:/opt/airflow/models
+    - ${AIRFLOW_PROJ_DIR:-.}/src:/opt/airflow/src
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
