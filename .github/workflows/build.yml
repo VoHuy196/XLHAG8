@@ -12,6 +12,12 @@ jobs:
   test-and-build:
     runs-on: self-hosted
     steps:
+      - name: Clean Workspace Permissions
+        run: |
+          sudo chown -R $USER:$USER ${{ github.workspace }} || true
+          docker run --rm -v ${{ github.workspace }}:/workspace alpine sh -c 'rm -rf /workspace/* /workspace/.*' || true
+        continue-on-error: true
+
       - name: Checkout code
         uses: actions/checkout@v3
 
