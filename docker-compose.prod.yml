@@ -1,0 +1,13 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    container_name: ${COMPOSE_PROJECT_NAME:-prod}_gradio_app
+    ports:
+      - "${APP_PORT:-7860}:7860"
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+      - ./config:/app/config
+    restart: always

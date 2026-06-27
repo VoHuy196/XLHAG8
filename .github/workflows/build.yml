@@ -23,14 +23,12 @@ jobs:
         run: |
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
             echo "Deploying to PRODUCTION"
+            echo "COMPOSE_FILE=docker-compose.prod.yml" >> $GITHUB_ENV
             echo "COMPOSE_PROJECT_NAME=prod" >> $GITHUB_ENV
-            echo "MINIO_PORT=9000" >> $GITHUB_ENV
-            echo "MINIO_CONSOLE_PORT=9001" >> $GITHUB_ENV
-            echo "MLFLOW_PORT=5001" >> $GITHUB_ENV
-            echo "AIRFLOW_PORT=8080" >> $GITHUB_ENV
             echo "APP_PORT=7860" >> $GITHUB_ENV
           else
             echo "Deploying to DEVELOPMENT"
+            echo "COMPOSE_FILE=docker-compose.mlops.yml" >> $GITHUB_ENV
             echo "COMPOSE_PROJECT_NAME=dev" >> $GITHUB_ENV
             echo "MINIO_PORT=9010" >> $GITHUB_ENV
             echo "MINIO_CONSOLE_PORT=9011" >> $GITHUB_ENV
