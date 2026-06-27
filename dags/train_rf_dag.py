@@ -114,12 +114,20 @@ with DAG(
                 echo "Downloading dataset..."
                 kaggle datasets download -d emmarex/plantdisease -p /opt/airflow/data/dataset --unzip
                 
-                # In case kaggle extracts into a subfolder like 'plantvillage' or 'PlantVillage', move them up
-                if [ -d "/opt/airflow/data/dataset/plantvillage" ]; then
-                    mv /opt/airflow/data/dataset/plantvillage/* /opt/airflow/data/dataset/
-                elif [ -d "/opt/airflow/data/dataset/PlantVillage" ]; then
-                    mv /opt/airflow/data/dataset/PlantVillage/* /opt/airflow/data/dataset/
+                # In case kaggle extracts into nested folders, we use cp -r to safely merge them
+                # and avoid "Directory not empty" errors from mv.
+                if [ -d "/opt/airflow/data/dataset/plantvillage/PlantVillage" ]; then
+                    cp -r /opt/airflow/data/dataset/plantvillage/PlantVillage/* /opt/airflow/data/dataset/ || true
                 fi
+                if [ -d "/opt/airflow/data/dataset/PlantVillage" ]; then
+                    cp -r /opt/airflow/data/dataset/PlantVillage/* /opt/airflow/data/dataset/ || true
+                fi
+                if [ -d "/opt/airflow/data/dataset/plantvillage" ]; then
+                    cp -r /opt/airflow/data/dataset/plantvillage/* /opt/airflow/data/dataset/ || true
+                fi
+                
+                # Clean up the leftover nested directories
+                rm -rf /opt/airflow/data/dataset/plantvillage /opt/airflow/data/dataset/PlantVillage
             else
                 echo "Dataset already exists, skipping download."
             fi
