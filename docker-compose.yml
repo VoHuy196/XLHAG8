@@ -62,10 +62,10 @@ services:
   # MinIO - S3-compatible object storage for MLflow artifacts
   minio:
     image: minio/minio:latest
-    container_name: ${USER:-xlhag8}_minio-server
+    container_name: ${COMPOSE_PROJECT_NAME:-xlhag8}_minio-server
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
@@ -85,7 +85,7 @@ services:
   # MinIO Client - Create bucket for MLflow
   minio-create-bucket:
     image: minio/mc:latest
-    container_name: ${USER:-xlhag8}_minio-create-bucket
+    container_name: ${COMPOSE_PROJECT_NAME:-xlhag8}_minio-create-bucket
     depends_on:
       minio:
         condition: service_healthy
@@ -102,7 +102,7 @@ services:
   # Create MLflow database
   postgres-init-mlflow:
     image: postgres:13
-    container_name: ${USER:-xlhag8}_postgres-init-mlflow
+    container_name: ${COMPOSE_PROJECT_NAME:-xlhag8}_postgres-init-mlflow
     depends_on:
       postgres:
         condition: service_healthy
@@ -122,9 +122,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.mlflow
-    container_name: ${USER:-xlhag8}_mlflow-server
+    container_name: ${COMPOSE_PROJECT_NAME:-xlhag8}_mlflow-server
     ports:
-      - "5001:5001"
+      - "${MLFLOW_PORT:-5001}:5001"
     environment:
       MLFLOW_S3_ENDPOINT_URL: http://minio:9000
       AWS_ACCESS_KEY_ID: minioadmin
@@ -163,10 +163,10 @@ services:
   # Airflow Webserver
   airflow-webserver:
     <<: *airflow-common
-    container_name: ${USER:-xlhag8}_airflow-webserver
+    container_name: ${COMPOSE_PROJECT_NAME:-xlhag8}_airflow-webserver
     command: webserver
     ports:
-      - "8080:8080"
+      - "${AIRFLOW_PORT:-8080}:8080"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
       interval: 30s
@@ -186,7 +186,7 @@ services:
   # Airflow Scheduler
   airflow-scheduler:
     <<: *airflow-common
-    container_name: ${USER:-xlhag8}_airflow-scheduler
+    container_name: ${COMPOSE_PROJECT_NAME:-xlhag8}_airflow-scheduler
     command: scheduler
     healthcheck:
       test: ["CMD-SHELL", "airflow jobs check --job-type SchedulerJob"]
@@ -207,7 +207,7 @@ services:
   # Airflow Init
   airflow-init:
     <<: *airflow-common
-    container_name: ${USER:-xlhag8}_airflow-init
+    container_name: ${COMPOSE_PROJECT_NAME:-xlhag8}_airflow-init
     entrypoint: /bin/bash
     command:
       - -c
@@ -232,9 +232,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.app
-    container_name: ${USER:-xlhag8}_gradio_app
+    container_name: ${COMPOSE_PROJECT_NAME:-xlhag8}_gradio_app
     ports:
-      - "7860:7860"
+      - "${APP_PORT:-7860}:7860"
     environment:
       MLFLOW_TRACKING_URI: http://mlflow:5001
       MLFLOW_S3_ENDPOINT_URL: http://minio:9000

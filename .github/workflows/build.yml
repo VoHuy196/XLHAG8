@@ -1,15 +1,13 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+      - develop
 
 jobs:
-  test-and-build:
+  deploy:
     runs-on: self-hosted
     steps:
       - name: Clean Workspace Permissions
@@ -21,25 +19,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-          cache: 'pip'
-
-      - name: Install dependencies
+      - name: Set Environment Variables
         run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
-          pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
-          pip install pytest
-
-      - name: Run Tests
-        run: |
-          source venv/bin/activate
-          # If there are tests, they will run here. For now just check if syntax is ok
-          python -m compileall .
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "Deploying to PRODUCTION"
+            echo "COMPOSE_PROJECT_NAME=prod" >> $GITHUB_ENV
+            echo "MINIO_PORT=9000" >> $GITHUB_ENV
+            echo "MINIO_CONSOLE_PORT=9001" >> $GITHUB_ENV
+            echo "MLFLOW_PORT=5001" >> $GITHUB_ENV
+            echo "AIRFLOW_PORT=8080" >> $GITHUB_ENV
+            echo "APP_PORT=7860" >> $GITHUB_ENV
+          else
+            echo "Deploying to DEVELOPMENT"
+            echo "COMPOSE_PROJECT_NAME=dev" >> $GITHUB_ENV
+            echo "MINIO_PORT=9010" >> $GITHUB_ENV
+            echo "MINIO_CONSOLE_PORT=9011" >> $GITHUB_ENV
+            echo "MLFLOW_PORT=5011" >> $GITHUB_ENV
+            echo "AIRFLOW_PORT=8081" >> $GITHUB_ENV
+            echo "APP_PORT=7861" >> $GITHUB_ENV
+          fi
 
       - name: Build Docker Images
         run: |
