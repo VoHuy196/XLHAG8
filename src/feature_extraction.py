@@ -178,5 +178,7 @@ def build_dataset(dataset_path):
 
 
 if __name__ == "__main__":
-    dataset_path = os.path.join(os.path.dirname(__file__), "dataset")
+    base_dir = os.path.dirname(__file__)
+    data_dir = os.path.join(os.path.dirname(base_dir), "data")
+    dataset_path = os.path.join(data_dir, "dataset")
     build_dataset(dataset_path)

@@ -109,16 +109,16 @@ with DAG(
     download_data_task = BashOperator(
         task_id='download_kaggle_dataset',
         bash_command="""
-            mkdir -p /opt/airflow/src/dataset
-            if [ ! -d "/opt/airflow/src/dataset/Tomato" ] && [ ! -d "/opt/airflow/src/dataset/Tomato___Bacterial_spot" ] && [ -z "$(ls -A /opt/airflow/src/dataset)" ]; then
+            mkdir -p /opt/airflow/data/dataset
+            if [ ! -d "/opt/airflow/data/dataset/Tomato" ] && [ ! -d "/opt/airflow/data/dataset/Tomato___Bacterial_spot" ] && [ -z "$(ls -A /opt/airflow/data/dataset)" ]; then
                 echo "Downloading dataset..."
-                kaggle datasets download -d emmarex/plantdisease -p /opt/airflow/src/dataset --unzip
+                kaggle datasets download -d emmarex/plantdisease -p /opt/airflow/data/dataset --unzip
                 
                 # In case kaggle extracts into a subfolder like 'plantvillage' or 'PlantVillage', move them up
-                if [ -d "/opt/airflow/src/dataset/plantvillage" ]; then
-                    mv /opt/airflow/src/dataset/plantvillage/* /opt/airflow/src/dataset/
-                elif [ -d "/opt/airflow/src/dataset/PlantVillage" ]; then
-                    mv /opt/airflow/src/dataset/PlantVillage/* /opt/airflow/src/dataset/
+                if [ -d "/opt/airflow/data/dataset/plantvillage" ]; then
+                    mv /opt/airflow/data/dataset/plantvillage/* /opt/airflow/data/dataset/
+                elif [ -d "/opt/airflow/data/dataset/PlantVillage" ]; then
+                    mv /opt/airflow/data/dataset/PlantVillage/* /opt/airflow/data/dataset/
                 fi
             else
                 echo "Dataset already exists, skipping download."
