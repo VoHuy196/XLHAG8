@@ -1,0 +1,12 @@
+.git
+.github
+.idea
+__pycache__
+venv/
+env/
+logs/
+data/
+models/
+.env
+*.pyc
+*.pyo
