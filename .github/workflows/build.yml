@@ -43,5 +43,10 @@ jobs:
 
       - name: Deploy Services
         run: |
-          docker compose down
-          docker compose up -d
+          # Dọn dẹp các container rác từ kiến trúc cũ đang chiếm port
+          docker compose -f docker-compose.mlops.yml -p xlhag8 down --remove-orphans || true
+          docker compose -f docker-compose.mlops.yml -p prod down --remove-orphans || true
+          
+          # Triển khai hệ thống mới
+          docker compose down --remove-orphans
+          docker compose up -d --remove-orphans
