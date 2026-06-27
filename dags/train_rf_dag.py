@@ -86,7 +86,15 @@ def run_rf_training(**context):
     p_label = f"n{best_params['n_estimators']}_depth{best_params['max_depth']}"
     model_path = os.path.join(MODELS_DIR, f"rf_best_plant_{p_label}.pkl")
     joblib.dump(best_model, model_path)
-    print(f"Best model saved to {model_path}")
+    print(f"Best model saved locally to {model_path}")
+    
+    # Register the best model to MLflow Model Registry
+    try:
+        model_uri = f"runs:/{best_run_id}/model"
+        registered_model = mlflow.register_model(model_uri, "PlantDisease_RF_Model")
+        print(f"Best model registered in MLflow Registry as: {registered_model.name} v{registered_model.version}")
+    except Exception as e:
+        print(f"Failed to register model to MLflow: {e}")
 
 default_args = {
     'owner': 'ml_team',

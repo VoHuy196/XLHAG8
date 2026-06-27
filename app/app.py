@@ -15,13 +15,27 @@ from src.feature_extraction import extract_features
 
 MODELS_DIR = BASE_DIR / "models"
 
+import os
+import mlflow
+
 # 1. Load Random Forest model + scaler + class names
-rf_candidates = sorted(MODELS_DIR.glob("rf_best_plant_*.pkl"), key=lambda p: p.stat().st_mtime)
-if not rf_candidates:
-    print("Warning: Không tìm thấy model Random Forest trong thư mục models/. App vẫn khởi động nhưng sẽ không predict được cho đến khi train xong.")
-    model = None
-else:
-    model = joblib.load(rf_candidates[-1])
+MLFLOW_TRACKING_URI = os.environ.get("MLFLOW_TRACKING_URI", "http://mlflow:5001")
+mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+
+try:
+    print("Loading model from MLflow Model Registry...")
+    model_uri = "models:/PlantDisease_RF_Model/latest"
+    model = mlflow.sklearn.load_model(model_uri)
+    print("Model loaded successfully from MLflow.")
+except Exception as e:
+    print(f"Warning: Failed to load model from MLflow: {e}")
+    print("Trying local models/ fallback...")
+    rf_candidates = sorted(MODELS_DIR.glob("rf_best_plant_*.pkl"), key=lambda p: p.stat().st_mtime)
+    if not rf_candidates:
+        print("Warning: Không tìm thấy model Random Forest. App vẫn khởi động nhưng sẽ không predict được.")
+        model = None
+    else:
+        model = joblib.load(rf_candidates[-1])
 
 try:
     scaler = joblib.load(BASE_DIR / "data" / "scaler.pkl")
