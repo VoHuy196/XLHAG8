@@ -6,7 +6,10 @@ from tqdm import tqdm
 from skimage.feature import hog, local_binary_pattern
 from skimage import color
 from skimage.transform import resize
-from segment_plant import segment_plant
+try:
+    from src.segment_plant import segment_plant
+except ImportError:
+    from segment_plant import segment_plant
 
 """
 Extract Color Histogram features
