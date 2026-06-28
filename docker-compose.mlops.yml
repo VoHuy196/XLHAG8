@@ -8,7 +8,7 @@ x-airflow-common:
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-airflow}:${POSTGRES_PASSWORD:-airflow}@postgres/airflow
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
@@ -19,8 +19,8 @@ x-airflow-common:
     
     MLFLOW_TRACKING_URI: 'http://mlflow:5001'
     MLFLOW_S3_ENDPOINT_URL: 'http://minio:9000'
-    AWS_ACCESS_KEY_ID: 'minioadmin'
-    AWS_SECRET_ACCESS_KEY: 'minioadmin'
+    AWS_ACCESS_KEY_ID: '${MINIO_ROOT_USER:-minioadmin}'
+    AWS_SECRET_ACCESS_KEY: '${MINIO_ROOT_PASSWORD:-minioadmin}'
     
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
@@ -43,15 +43,15 @@ services:
     image: postgres:13
     container_name: ${USER:-xlhag8}_postgres-server
     environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
+      POSTGRES_USER: ${POSTGRES_USER:-airflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-airflow}
+      POSTGRES_DB: ${POSTGRES_DB:-airflow}
       POSTGRES_MULTIPLE_DATABASES: mlflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
       - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-airflow}"]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -67,8 +67,8 @@ services:
       - "${MINIO_PORT:-9000}:9000"
       - "${MINIO_CONSOLE_PORT:-9001}:9001"
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
     volumes:
       - minio-data-volume:/data
     command: server /data --console-address ":9001"
@@ -89,9 +89,12 @@ services:
     depends_on:
       minio:
         condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc alias set myminio http://minio:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD;
       /usr/bin/mc mb myminio/mlflow --ignore-existing;
       /usr/bin/mc anonymous set download myminio/mlflow;
       exit 0;
@@ -107,11 +110,12 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      PGPASSWORD: airflow
+      PGPASSWORD: ${POSTGRES_PASSWORD:-airflow}
+      POSTGRES_USER: ${POSTGRES_USER:-airflow}
     command: >
       bash -c "
-      psql -h postgres -U airflow -d postgres -tc \"SELECT 1 FROM pg_database WHERE datname = 'mlflow'\" | grep -q 1 || 
-      psql -h postgres -U airflow -d postgres -c 'CREATE DATABASE mlflow';
+      psql -h postgres -U $$POSTGRES_USER -d postgres -tc \"SELECT 1 FROM pg_database WHERE datname = 'mlflow'\" | grep -q 1 || 
+      psql -h postgres -U $$POSTGRES_USER -d postgres -c 'CREATE DATABASE mlflow';
       echo 'MLflow database ready';
       "
     networks:
@@ -127,8 +131,8 @@ services:
       - "${MLFLOW_PORT:-5001}:5001"
     environment:
       MLFLOW_S3_ENDPOINT_URL: http://minio:9000
-      AWS_ACCESS_KEY_ID: minioadmin
-      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minioadmin}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
     volumes:
       - ${AIRFLOW_PROJ_DIR:-.}/models:/models
     command:
@@ -137,7 +141,7 @@ services:
       - |
         pip install mlflow==2.17.2 boto3 psycopg2-binary
         mlflow server \
-          --backend-store-uri postgresql://airflow:airflow@postgres:5432/mlflow \
+          --backend-store-uri postgresql://${POSTGRES_USER:-airflow}:${POSTGRES_PASSWORD:-airflow}@postgres:5432/mlflow \
           --default-artifact-root s3://mlflow/ \
           --host 0.0.0.0 \
           --port 5001
@@ -227,7 +231,7 @@ services:
     networks:
       - airflow-mlflow-net
 
-  # Gradio App
+  # Gradio App (Development)
   app:
     build:
       context: .
@@ -238,8 +242,8 @@ services:
     environment:
       MLFLOW_TRACKING_URI: http://mlflow:5001
       MLFLOW_S3_ENDPOINT_URL: http://minio:9000
-      AWS_ACCESS_KEY_ID: minioadmin
-      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minioadmin}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
     volumes:
       - ${AIRFLOW_PROJ_DIR:-.}/models:/app/models
     depends_on:
@@ -254,3 +258,4 @@ volumes:
 networks:
   airflow-mlflow-net:
     driver: bridge
+    name: shared_mlops_net

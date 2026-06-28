@@ -6,8 +6,16 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME:-prod}_gradio_app
     ports:
       - "${APP_PORT:-7860}:7860"
-    volumes:
-      - ./models:/app/models
-      - ./data:/app/data
-      - ./config:/app/config
+    environment:
+      # Ket noi toi MLOps Core Infrastructure dang chay tren cung server thong qua mang shared_mlops_net
+      MLFLOW_TRACKING_URI: http://mlflow:5001
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minioadmin}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
     restart: always
+    networks:
+      - shared_mlops_net
+
+networks:
+  shared_mlops_net:
+    external: true

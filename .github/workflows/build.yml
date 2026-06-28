@@ -37,16 +37,20 @@ jobs:
             echo "APP_PORT=7861" >> $GITHUB_ENV
           fi
 
+      - name: Load Secrets from .env if exists
+        run: |
+          if [ -f .env ]; then
+            export $(cat .env | grep -v '#' | awk '/=/ {print $1}')
+          fi
+
       - name: Build Docker Images
         run: |
           docker compose build
 
       - name: Deploy Services
         run: |
-          # Dọn dẹp các container rác từ kiến trúc cũ đang chiếm port
-          docker compose -f docker-compose.mlops.yml -p xlhag8 down --remove-orphans || true
-          docker compose -f docker-compose.mlops.yml -p prod down --remove-orphans || true
+          # Dam bao mang dung chung ton tai
+          docker network create shared_mlops_net || true
           
-          # Triển khai hệ thống mới
-          docker compose down --remove-orphans
+          # Trien khai he thong theo dung COMPOSE_FILE
           docker compose up -d --remove-orphans

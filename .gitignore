@@ -15,3 +15,5 @@ __pycache__/
 
 # Loại bỏ các file log hoặc output
 outputs/
+# Environment variables
+.env
